@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html
+ 
+lang="en">
+
+<head>
+
+  
+<meta
+ 
+charset="UTF-8">
+
+  
+<meta
+ 
+name="viewport"
+ 
+content="width=device-width, initial-scale=1.0">
+
+  
+<title>Item Filter</title>
+  <style>
+    #items {
+      list-style: none;
+      padding: 0;
+    }
+    .description {
+      font-size: 0.8em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <h1>Item List</h1>
+  <input type="text" id="filter" placeholder="Search items">
+  <ul id="items"></ul>
+
+  <script>
+    const filter = document.getElementById('filter');
+    const items = document.querySelectorAll('#items li');
+
+    function filterItems(e) {
+      const text = e.target.value.toLowerCase();
+      items.forEach(item => {
+        const itemName = item.textContent.toLowerCase();
+        const itemDescription = item.querySelector('.description').textContent.toLowerCase();
+        const isMatch = itemName.indexOf(text) !== -1 || itemDescription.indexOf(text) !== -1;
+        item.style.display = isMatch ? 'block' : 'none';
+      });
+    }
+
+    filter.addEventListener('keyup', filterItems);
+
+    const itemsList = document.getElementById('items');
+
+    // Add new item with name and description
+    function addItem(itemName, itemDescription) {
+      const item = document.createElement('li');
+      item.textContent = itemName;
+      const description = document.createElement('p');
+      description.classList.add('description');
+      description.textContent = itemDescription;
+      item.appendChild(description);
+      itemsList.appendChild(item);
+    }
+
+    // Example item creation
+    addItem('Apple', 'A juicy red fruit');
+    addItem('Banana', 'A curved yellow fruit');
+    addItem('Orange', 'A round citrus fruit');
+  </script>
+</body>
+</html>
