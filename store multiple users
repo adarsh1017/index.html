@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Storage</title>
+</head>
+<body>
+  <script>
+    // Array to store user details
+    var users = [];
+
+    // Function to add a new user
+    function addUser(name, email, phone) {
+      var user = {
+        name: name,
+        email: email,
+        phone: phone
+      };
+
+      // Add the user to the array
+      users.push(user);
+    }
+
+    // Adding 5 users
+    addUser("Adarsh", "adarshnamdev1011@gmail.com", "8770977122");
+    addUser("Aditya", "aditya01@gmail.com", "9090908871");
+    addUser("Ram", "ram0983@gmail.com", "9834345789");
+    addUser("Raj", "rajsagar456@gmail.com", "9908712312");
+    addUser("Vaibhav", "vaibhav@gmail.com", "9993912240");
+
+    // Display the user details
+    console.log("Users:", users);
+
+    // You can access individual users like this:
+    console.log("User 1:", users[0]);
+    console.log("User 2:", users[1]);
+    // ...and so on
+
+  </script>
+</body>
+</html>
