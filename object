@@ -1,0 +1,12 @@
+const myObject = {
+  name: 'John Doe',
+  age: 30
+};
+
+const myObjectSerialized = JSON.stringify(myObject);
+
+localStorage.setItem('myObject', myObjectSerialized);
+
+const myObjectDeserialized = JSON.parse(localStorage.getItem('myObject'));
+
+console.log(myObjectDeserialized); // { name: 'John Doe', age: 30 }
