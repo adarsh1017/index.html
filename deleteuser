@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Storage</title>
+  <style>
+    /* Add some basic styling for better UI */
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    button {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h2>User List</h2>
+    <ul id="userList"></ul>
+  </div>
+
+  <script>
+    // Function to render the user list in the UI
+    function renderUserList() {
+      var userListElement = document.getElementById("userList");
+      userListElement.innerHTML = ""; // Clear the previous content
+
+      users.forEach(function (user, index) {
+        var li = document.createElement("li");
+        li.innerHTML = `
+          <span>${user.name}, ${user.email}, ${user.phone}</span>
+          <button onclick="deleteUser(${index})">Delete</button>
+        `;
+        userListElement.appendChild(li);
+      });
+    }
+
+    // Function to delete a user
+    function deleteUser(index) {
+      users.splice(index, 1); // Remove the user from the array
+      renderUserList(); // Update the UI
+      updateLocalStorage(); // Update the local storage
+    }
+
+    // Function to add a new user
+    function addUser(name, email, phone) {
+      var user = {
+        name: name,
+        email: email,
+        phone: phone
+      };
+
+      // Add the user to the array
+      users.push(user);
+    }
+
+    // Function to update local storage
+    function updateLocalStorage() {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    // Array to store user details
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+
+    // Adding 5 users
+    addUser("Adarsh", "adarshnamdev1011@gmail.com", "8770977122");
+    addUser("Aditya", "aditya01@gmail.com", "9090908871");
+    addUser("Ram", "ram0983@gmail.com", "9834345789");
+    addUser("Raj", "rajsagar456@gmail.com", "9908712312");
+    addUser("Vaibhav", "vaibhav@gmail.com", "9993912240");
+
+    // Display the user list in the UI
+    renderUserList();
+
+  </script>
+</body>
+</html>
