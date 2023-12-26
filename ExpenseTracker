@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-4 mb-4">Expense Tracker</h1>
+
+    <!-- Expense Form -->
+    <form id="expenseForm">
+        <div class="mb-3">
+            <label for="amountInput" class="form-label">Choose Expense Amount:</label>
+            <input type="number" class="form-control" id="amountInput" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="descriptionInput" class="form-label">Choose Description:</label>
+            <input type="text" class="form-control" id="descriptionInput" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="categoryInput" class="form-label">Choose Category:</label>
+            <input type="text" class="form-control" id="categoryInput" required>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="addExpense()">Add Expense</button>
+    </form>
+
+    <!-- Expense List -->
+    <ul id="expenseList" class="list-group mt-4"></ul>
+</div>
+
+<!-- Bootstrap JS and Popper.js (required for Bootstrap) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Function to add expense
+    function addExpense() {
+        // Get input values
+        const amount = document.getElementById('amountInput').value;
+        const description = document.getElementById('descriptionInput').value;
+        const category = document.getElementById('categoryInput').value;
+
+        // Check if all fields are filled
+        if (!amount || !description || !category) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        // Create an object to represent the expense
+        const expense = {
+            amount: parseFloat(amount),
+            description,
+            category
+        };
+
+        // Get existing expenses from local storage or create an empty array
+        const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+        // Add the new expense to the array
+        expenses.push(expense);
+
+        // Save the updated expenses array to local storage
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+
+        // Clear the form
+        document.getElementById('expenseForm').reset();
+
+        // Update the expense list
+        updateExpenseList();
+    }
+
+    // Function to update the expense list
+    function updateExpenseList() {
+        // Get the expense list element
+        const expenseList = document.getElementById('expenseList');
+
+        // Clear the current content of the list
+        expenseList.innerHTML = '';
+
+        // Get expenses from local storage
+        const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+        // Loop through the expenses and create list items
+        expenses.forEach((expense, index) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('list-group-item');
+            listItem.innerHTML = `
+                <strong>${expense.description}</strong> - ${expense.amount} (${expense.category})
+                <button class="btn btn-warning btn-sm mx-2" onclick="editExpense(${index})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteExpense(${index})">Delete</button>
+            `;
+            expenseList.appendChild(listItem);
+        });
+    }
+
+    // Function to edit expense
+    function editExpense(index) {
+        // Get expenses from local storage
+        const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+        // Get the specific expense by index
+        const editedExpense = expenses[index];
+
+        // Populate the form with the expense details
+        document.getElementById('amountInput').value = editedExpense.amount;
+        document.getElementById('descriptionInput').value = editedExpense.description;
+        document.getElementById('categoryInput').value = editedExpense.category;
+
+        // Remove the edited expense from the list
+        expenses.splice(index, 1);
+
+        // Save the updated expenses array to local storage
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+
+        // Update the expense list
+        updateExpenseList();
+    }
+
+    // Function to delete expense
+    function deleteExpense(index) {
+        // Get expenses from local storage
+        const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+        // Remove the expense from the list
+        expenses.splice(index, 1);
+
+        // Save the updated expenses array to local storage
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+
+        // Update the expense list
+        updateExpenseList();
+    }
+
+    // Initial update of the expense list when the page loads
+    updateExpenseList();
+</script>
+
+</body>
+</html>
