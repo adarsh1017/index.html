@@ -1,0 +1,67 @@
+// Mock data and functions
+const posts = [];
+let lastActivityTime = null;
+
+// Function to create a post
+function createPost(post) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      posts.push(post);
+      resolve(posts);
+    }, 1000);
+  });
+}
+
+// Function to update last user activity time
+function updateLastUserActivityTime() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      lastActivityTime = new Date();
+      resolve(lastActivityTime);
+    }, 1000);
+  });
+}
+
+// Function to delete a post
+function deletePost(postIndex) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (posts.length > postIndex) {
+        posts.splice(postIndex, 1);
+        resolve(posts);
+      } else {
+        reject(new Error('Invalid post index'));
+      }
+    }, 1000);
+  });
+}
+
+// Function to handle the entire process
+function handlePostCreation() {
+  createPost("New Post Content")
+    .then((updatedPosts) => {
+      console.log("Posts after creation:", updatedPosts);
+
+      updateLastUserActivityTime()
+        .then((updatedActivityTime) => {
+          console.log("Last Activity Time:", updatedActivityTime);
+
+          deletePost(posts.length - 1)
+            .then((remainingPosts) => {
+              console.log("Posts after deletion:", remainingPosts);
+            })
+            .catch((error) => {
+              console.error("Error deleting post:", error.message);
+            });
+        })
+        .catch((error) => {
+          console.error("Error updating last activity time:", error.message);
+        });
+    })
+    .catch((error) => {
+      console.error("Error creating post:", error.message);
+    });
+}
+
+// Call the function to simulate the process
+handlePostCreation();
