@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Appointment App</title>
+    <style>
+        /* Add your CSS styles here */
+        .delete-icon {
+            cursor: pointer;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Booking Appointment App</h2>
+
+<div>
+    <label for="name">Name:</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" placeholder="Enter your email">
+
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone" placeholder="Enter your phone number">
+
+    <button onclick="submitForm()">Submit</button>
+</div>
+
+<table id="appointments">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Action</th>
+    </tr>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const API_ENDPOINT = "https://crudcrud.com/api/01167761b1a34e948339d7bdbb47715a"; // Replace with your actual API endpoint
+
+    function submitForm() {
+        var name = document.getElementById("name").value;
+        var email = document.getElementById("email").value;
+        var phone = document.getElementById("phone").value;
+
+        if (name && email && phone) {
+            var appointment = { name: name, email: email, phone: phone };
+
+            // Send the appointment data to crudcrud.com using Axios
+            axios.post(API_ENDPOINT, appointment)
+                .then(function(response) {
+                    console.log("Data saved successfully:", response.data);
+                    displayAppointments();
+                })
+                .catch(function(error) {
+                    console.error("Error saving data:", error);
+                });
+        } else {
+            alert("Please fill in all fields");
+        }
+    }
+
+    function displayAppointments() {
+        // Fetch and display appointments from crudcrud.com
+        axios.get(API_ENDPOINT)
+            .then(function(response) {
+                var appointmentsTable = document.getElementById("appointments");
+                clearTable();
+
+                var appointments = response.data || [];
+
+                appointments.forEach(function(appointment, index) {
+                    var row = appointmentsTable.insertRow(-1);
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    var cell4 = row.insertCell(3);
+
+                    cell1.innerHTML = appointment.name;
+                    cell2.innerHTML = appointment.email;
+                    cell3.innerHTML = appointment.phone;
+
+                    var deleteIcon = document.createElement("span");
+                    deleteIcon.innerHTML = "&#10060;"; // Unicode for "cross" (delete icon)
+                    deleteIcon.className = "delete-icon";
+                    deleteIcon.onclick = function() {
+                        deleteAppointment(appointment._id, row);
+                    };
+                    cell4.appendChild(deleteIcon);
+                });
+            })
+            .catch(function(error) {
+                console.error("Error fetching data:", error);
+            });
+    }
+
+    function clearTable() {
+        var appointmentsTable = document.getElementById("appointments");
+        while (appointmentsTable.rows.length > 1) {
+            appointmentsTable.deleteRow(1);
+        }
+    }
+
+    function deleteAppointment(id, row) {
+        // Perform DELETE request to crudcrud.com with the corresponding _id
+        axios.delete(`${API_ENDPOINT}/${id}`)
+            .then(function(response) {
+                console.log("Data deleted successfully:", response.data);
+
+                // Remove the row from the website
+                row.parentNode.removeChild(row);
+            })
+            .catch(function(error) {
+                console.error("Error deleting data:", error);
+            });
+    }
+
+    displayAppointments(); // Display existing appointments on page load
+</script>
+
+</body>
+</html>
