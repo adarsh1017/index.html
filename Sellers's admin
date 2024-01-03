@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller's Admin App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #app {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        #productList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #productList li {
+            margin-bottom: 10px;
+        }
+        #totalValue {
+            font-size: 22px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h2 class="mt-4">Seller's Admin App</h2>
+        
+        <!-- Choose Selling Price -->
+        <div class="form-group">
+            <label for="sellingPrice">Choose Selling Price</label>
+            <div class="input-group">
+                <input type="number" class="form-control" id="sellingPrice" placeholder="Enter selling price">
+                <div class="input-group-append">
+                    <span class="input-group-text">.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Choose Product Name -->
+        <div class="form-group">
+            <label for="productName">Choose Product Name</label>
+            <input type="text" class="form-control" id="productName" placeholder="Enter product name">
+        </div>
+
+        <!-- Add Product Button -->
+        <button class="btn btn-primary mb-3" onclick="addProduct()">Add Product</button>
+
+        <!-- Products Heading -->
+        <h3 class="mt-4 mb-3">Products</h3>
+
+        <!-- Product List -->
+        <ul id="productList"></ul>
+
+        <!-- Total Value of Products -->
+        <div id="totalValue" class="mt-3"></div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap JavaScript components) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    
+    <!-- JavaScript -->
+    <script>
+        // Define variables
+        const sellingPriceInput = document.getElementById('sellingPrice');
+        const productNameInput = document.getElementById('productName');
+        const productList = document.getElementById('productList');
+        const totalValue = document.getElementById('totalValue');
+        const apiUrl = 'https://crudcrud.com/api/6d7f7b5d964d4990a67a67bfdf942d16/products';
+
+        // Load products from local storage when the page loads
+        window.onload = function () {
+            loadFromLocalStorage();
+        };
+
+        // Function to add a new product
+        function addProduct() {
+            const sellingPrice = sellingPriceInput.value;
+            const productName = productNameInput.value;
+
+            if (sellingPrice.trim() !== '' && productName.trim() !== '') {
+                const li = document.createElement('li');
+                li.innerHTML = `• ${sellingPrice} - ${productName} <button class="btn btn-danger btn-sm ml-2" onclick="deleteProduct(this)">Delete Product</button>`;
+                productList.appendChild(li);
+
+                // Calculate and update total value
+                updateTotalValue();
+
+                // Save to local storage and send to cloud
+                saveToLocalStorage();
+                sendToCloud({ sellingPrice, productName });
+            } else {
+                alert('Please enter selling price and product name.');
+            }
+        }
+
+        // Function to delete a product
+        function deleteProduct(button) {
+            const listItem = button.closest('li');
+            listItem.remove();
+
+            // Calculate and update total value
+            updateTotalValue();
+
+            // Save to local storage and send to cloud
+            saveToLocalStorage();
+            sendToCloud();
+        }
+
+        // Function to update total value
+        function updateTotalValue() {
+            const sellingPrices = document.querySelectorAll('#productList li');
+            let sum = 0;
+
+            sellingPrices.forEach(item => {
+                const sellingPrice = item.innerText.match(/• (\d+) -/);
+                if (sellingPrice) {
+                    sum += parseInt(sellingPrice[1]);
+                }
+            });
+
+            totalValue.innerText = `Total Value Worth of Products: ${sum}`;
+        }
+
+        // Function to save products to local storage
+        function saveToLocalStorage() {
+            const products = [];
+            const sellingPrices = document.querySelectorAll('#productList li');
+
+            sellingPrices.forEach(item => {
+                const sellingPrice = item.innerText.match(/• (\d+) -/);
+                const productName = item.innerText.match(/- (.+)/);
+
+                if (sellingPrice && productName) {
+                    products.push({
+                        sellingPrice: parseInt(sellingPrice[1]),
+                        productName: productName[1]
+                    });
+                }
+            });
+
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        // Function to load products from local storage
+        function loadFromLocalStorage() {
+            const storedProducts = localStorage.getItem('products');
+
+            if (storedProducts) {
+                const products = JSON.parse(storedProducts);
+
+                products.forEach(product => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `• ${product.sellingPrice} - ${product.productName} <button class="btn btn-danger btn-sm ml-2" onclick="deleteProduct(this)">Delete Product</button>`;
+                    productList.appendChild(li);
+                });
+
+                // Calculate and update total value
+                updateTotalValue();
+            }
+        }
+
+        // Function to send product data to the cloud
+        function sendToCloud(product = null) {
+            if (product) {
+                // Send a POST request to the cloud
+                axios.post(apiUrl, product)
+                    .then(response => {
+                        console.log('Data sent to the cloud:', response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error sending data to the cloud:', error);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
